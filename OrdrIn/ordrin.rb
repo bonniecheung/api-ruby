@@ -1,7 +1,13 @@
+#
+# Order.in Ruby Library Alpha
+# http://ordr.in
+#
+# (c) 2011
+# Last update: September 2011
+#
+
 class OrdrIn
   attr_accessor :_email, :_password, :_url, :_key, :_errors
-  # @@_email_regex = '^[a-zA-Z0-9._%-+]+@[a-zA-Z0-9._%-]+.[a-zA-Z]{2,6}$'
-  # @@_email_regex = '^([^\s]+)((?:[-a-z0-9]\.)[a-z]{2,})$';
   @@_email_regex = %r{^[0-9a-z][0-9a-z.+]+[0-9a-z]@[0-9a-z][0-9a-z.-]+[0-9a-z]$}xi
 
   def initialize(key, url)
@@ -15,7 +21,7 @@ class OrdrIn
 
     unless email =~ @@_email_regex
       ## Error
-      @_errors << File.basename(__FILE__) + " setCurrAcct - validation - email invalid (" +email+")";
+      @_errors << sprintf("%s setCurrAcct - validation - email invalid (%s)", File.basename(__FILE__), email);
     else
       self._email= email
       self._password=pass

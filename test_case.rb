@@ -1,11 +1,12 @@
 #!/usr/bin/env ruby -wKU
-require_relative 'ordrin'
+require_relative 'Ordrin/ordrin'
 
-o = OrdrIn.new("1","2")
-o.setCurrAcct('1234', 'password1')
+o = OrdrIn.new('mlJhC8iX4BGWVtn','https://r-test.ordr.in')
+# o.setCurrAcct('1234', 'password1')
+o.setCurrAcct('test@test.com','password')
 
 # o2 = OrdrIn.new("3", "4")
-# o2.setCurrAcct('dave@voygr.com', 'password1');
+# o2.setCurrAcct('dave@voygr.com', 'password1')
 
 puts "In the test case"
 puts o
