@@ -1,23 +1,25 @@
 class OrdrIn
   attr_accessor :_email, :_password, :_url, :_key, :_errors
-  @_email_regex = '^[a-zA-Z0-9._%-+]+@[a-zA-Z0-9._%-]+.[a-zA-Z]{2,6}$'
+  # @@_email_regex = '^[a-zA-Z0-9._%-+]+@[a-zA-Z0-9._%-]+.[a-zA-Z]{2,6}$'
+  # @@_email_regex = '^([^\s]+)((?:[-a-z0-9]\.)[a-z]{2,})$';
+  @@_email_regex = %r{^[0-9a-z][0-9a-z.+]+[0-9a-z]@[0-9a-z][0-9a-z.-]+[0-9a-z]$}xi
 
   def initialize(key, url)
     self._key=key
     self._url=url
+
+    self._errors = []
   end
 
   def setCurrAcct(email, pass)
-    #if /self.@_email_regex/.match(email)
-    puts email =~ /@_email_regex/
-    unless email =~ /@_email_regex/
-      puts "if catch"
+
+    unless email =~ @@_email_regex
+      ## Error
+      @@_errors[] = __FILE__ + " setCurrAcct - validation - email invalid ($email)";
     else
-      puts "Else if"
+      self._email= email
+      self._password=pass
     end
-    
-    #self._email= email
-    #self._password=pass
   end
   
   ## For debug, the string representation of this
