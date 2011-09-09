@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby -wKU
 require_relative 'ordrin'
 
 o = OrdrIn.new("1","2")
