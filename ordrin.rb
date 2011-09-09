@@ -8,14 +8,14 @@ class OrdrIn
     self._key=key
     self._url=url
 
-    self._errors = []
+    @_errors = Array.new
   end
 
   def setCurrAcct(email, pass)
 
     unless email =~ @@_email_regex
       ## Error
-      @@_errors[] = __FILE__ + " setCurrAcct - validation - email invalid ($email)";
+      @_errors << File.basename(__FILE__) + " setCurrAcct - validation - email invalid (" +email+")";
     else
       self._email= email
       self._password=pass
@@ -30,6 +30,6 @@ class OrdrIn
     printf "%10s : %s\n", "Email", self._email
     printf "%10s : %s\n", "Password", self._password
     printf "%10s : %s\n", "Errors", self._errors
-    puts "*" * 23
+    print "*" * 23
   end
 end
