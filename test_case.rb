@@ -1,5 +1,4 @@
-#!/usr/bin/env ruby -wKU
-require_relative 'Ordrin/ordrin'
+rubyrequire_relative 'Ordrin/ordrin'
 
 dT = dT.new
 
