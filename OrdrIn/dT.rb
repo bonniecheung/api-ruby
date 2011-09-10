@@ -8,7 +8,7 @@
 # Last update: September 2011
 #
 
-class dT < OrdrIn
+class DT < OrdrIn
 	attr :date
 
 	def initialize(date) 
