@@ -16,6 +16,7 @@ class DT < OrdrIn
 			@date = Date.today
 		else
 			@date = date
+		end
 	end
 
 	def to_s
