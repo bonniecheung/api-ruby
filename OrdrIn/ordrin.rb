@@ -6,9 +6,6 @@
 # Last update: September 2011
 #
 
-require_relative 'dT'
-require_relative 'Address'
-
 class OrdrIn
   attr_accessor :_email, :_password, :_url, :_key, :_errors
   @@_email_regex = %r{^[0-9a-z][0-9a-z.+]+[0-9a-z]@[0-9a-z][0-9a-z.-]+[0-9a-z]$}xi

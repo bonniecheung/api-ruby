@@ -8,7 +8,7 @@
 # Last update: September 2011
 #
 
-class dT < OrdrIn
+class DT < OrdrIn
 	attr :date
 
 	def initialize(date) 
@@ -16,6 +16,7 @@ class dT < OrdrIn
 			@date = Date.today
 		else
 			@date = date
+		end
 	end
 
 	def to_s
