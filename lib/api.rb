@@ -4,6 +4,7 @@
 
 require 'net/http'
 require 'date'
+require 'cgi'
 ## TODO: I'm sure there will be more
 
 module API
@@ -75,9 +76,11 @@ module API
     end
 
     def _convertForAPI
-      if (@asap?) return "ASAP"
-
+      unless @ASAP
         return @date.month + '-' + @date.day + '+' + @date.hour + ':' + @date.minute
+      else
+        puts "ASAP"
+      end
     end
 
     def to_s
@@ -85,6 +88,32 @@ module API
       printf("%10s : %s\n", 'Date', @date)
       printf("%10s : %s\n", 'ASAP', @asap)
       puts '*' * 41
+    end
+  end
+  ## ---------------------------------------------------------------------------------------- ##  
+  ## -------------------------- DT     CLASS ------------------------------------------------ ##
+  class Address
+    attr :street, :city, :zip, :street2, :state, :phone, :nick
+
+    def initialize(street, city, zip, street2, state, phone, nick)
+      @street=CGI::escape(street)
+      @city=CGI::escape(city)
+      @zip=zip
+      @street2=CGI::escape(street2)
+      @state=state
+      @phone=phone
+      @nick=nick
+    end
+
+    def to_s
+      puts('********* DEBUG INFO - Class dT *********')
+      printf("%10s : %s\n", 'Street', @street)
+      printf("%10s : %s\n", 'City', @city)
+      printf("%10s : %s\n", 'Zip', @zip)
+      printf("%10s : %s\n", 'Street2', @street2)
+      printf("%10s : %s\n", 'State', @state)
+      printf("%10s : %s\n", 'Phone', @phone)
+      printf("%10s : %s\n", 'Nick', @nick)
     end
   end
   ## ---------------------------------------------------------------------------------------- ##  

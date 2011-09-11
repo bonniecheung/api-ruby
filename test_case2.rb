@@ -18,3 +18,6 @@ puts 'Day   : ' + dt._strAPI('day')
 puts 'Hour  : ' + dt._strAPI('hour')
 puts 'Minute: ' + dt._strAPI('minute')
 puts dt
+
+a = API::Address.new('street with spaces', 'city', 'zip', 'street2','state', 'phone','nick')
+puts a.to_s
