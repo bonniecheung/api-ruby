@@ -8,6 +8,8 @@ require 'cgi'
 ## TODO: I'm sure there will be more
 
 module API
+  attr :_errors
+
   $_errors = Array.new
 
   ## -------------------------- ORDRIN CLASS ------------------------------------------------ ##
@@ -24,7 +26,7 @@ module API
 
       unless email =~ @@_email_regex
         ## Error
-        $_errors << sprintf("%s setCurrAcct - validation - email invalid (%s)", File.basename(__FILE__), email);
+        $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - email invalid #{email}"
       else
         self._email= email
         self._password=pass
@@ -50,10 +52,8 @@ module API
 
     def initialize(date=nil) 
       unless date
-        puts "Date is nil, trying to set with today"
         @date = DateTime.now
       else
-        puts 'Setting date to passed'
         @date = date
       end
       @asap = false
@@ -91,7 +91,8 @@ module API
     end
   end
   ## ---------------------------------------------------------------------------------------- ##  
-  ## -------------------------- DT     CLASS ------------------------------------------------ ##
+
+  ## -------------------------- Address CLASS ----------------------------------------------- ##
   class Address
     attr :street, :city, :zip, :street2, :state, :phone, :nick
 
@@ -105,8 +106,48 @@ module API
       @nick=nick
     end
 
+    def _convertForAPI
+      return @zip + '/' + @city + '/' + @street
+    end
+
+    def validate(element='all')
+      if (element == 'zip' && !(@zip =~ %r{(^\d{5}$)|(^\d{5}-\d{4}$)}i)) ## Validate Zip
+        puts "#{__LINE__}: ZIP Error, not a valid zip"
+        $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - Zip code invalid (#{@zip})"
+      elsif (element == 'phone' && !(@phone =~ %r{(^\(?(\d{3})\)?[- .]?(\d{3})[- .]?(\d{4})$)}i))
+        puts "#{__LINE__}: PHONE Error, not a valid phone"
+        $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - Phone number invalid (#{@phone})"
+      elsif (element == 'city' && !(@city =~ %r{[A-z.-]}))
+        puts "#{__LINE__}: CITY Error, not a valid city"
+        $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - City (invalid, only letters/spaces allowed) (#{@city})"
+      elsif (element == 'state' && !(@state =~ %r{^([A-z]){2}$}))
+        puts "#{__LINE__}: STATE Error, not a valid state"
+        $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - State (invalid, only letters allowed and must be passed as two-letter abbreviation) (#{@state})"
+      else ## Do all 
+        if (!(@zip =~ %r{(^\d{5}$)|(^\d{5}-\d{4}$)}i)) ## Validate Zip
+          puts "#{__LINE__}: ZIP Error, not a valid zip"
+          $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - Zip code invalid (#{@zip})"
+        end
+
+        if (!(@phone =~ %r{(^\(?(\d{3})\)?[- .]?(\d{3})[- .]?(\d{4})$)}i))
+          puts "#{__LINE__}: PHONE Error, not a valid phone"
+          $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - Phone number invalid (#{@phone})"
+        end
+
+        if (!(@city =~ %r{[A-z.-]}))
+          puts "#{__LINE__}: CITY Error, not a valid city"
+          $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - City (invalid, only letters/spaces allowed) (#{@city})"
+        end
+
+        if (!(@state =~ %r{^([A-z]){2}$}))
+          puts "#{__LINE__}: STATE Error, not a valid state"
+          $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - State (invalid, only letters allowed and must be passed as two-letter abbreviation) (#{@state})"
+        end
+      end
+    end
+
     def to_s
-      puts('********* DEBUG INFO - Class dT *********')
+      puts('********* DEBUG INFO - Class Address *********')
       printf("%10s : %s\n", 'Street', @street)
       printf("%10s : %s\n", 'City', @city)
       printf("%10s : %s\n", 'Zip', @zip)
@@ -114,7 +155,25 @@ module API
       printf("%10s : %s\n", 'State', @state)
       printf("%10s : %s\n", 'Phone', @phone)
       printf("%10s : %s\n", 'Nick', @nick)
+      puts '*' * 46
     end
+  end
+  ## ---------------------------------------------------------------------------------------- ##  
+
+  ## -------------------------- Money   CLASS ----------------------------------------------- ##
+  class Money
+    attr :amount
+
+    def initialize
+      @amount = 0.00
+    end
+
+    def to_s
+      puts('********* DEBUG INFO - Class Money ***********')
+      printf("%10s : %.2f\n", 'Amount', @amount)
+      puts '*' * 46
+    end
+    
   end
   ## ---------------------------------------------------------------------------------------- ##  
 
