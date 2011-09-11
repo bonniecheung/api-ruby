@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby -wKU
 #!/usr/bin/env ruby -wKU
-$LOAD_PATH.unshift File.dirname(__FILE__) + '/lib'
+#$LOAD_PATH.unshift File.dirname(__FILE__) + '/lib'
 # puts $LOAD_PATH
 
-require 'api'
+require 'lib/api'
 
 o = API::OrdrIn.new('1','2')
 dt = API::DT.new
