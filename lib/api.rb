@@ -50,7 +50,7 @@ module API
     def initialize(date=nil) 
       unless date
         puts "Date is nil, trying to set with today"
-        @date = Date.today()
+        @date = DateTime.now
       else
         puts 'Setting date to passed'
         @date = date
@@ -60,13 +60,26 @@ module API
 
 
     def _strAPI(ele)
-      case ele
+      case ele.downcase
       when 'month'
-        puts 'Month'
+        return sprintf('%02d', @date.month)
       when 'day'
-        puts 'Day'
+        return sprintf('%02d', @date.day)
+      when 'hour'
+        return sprintf('%02d', @date.hour)
+      when 'minute'
+        return sprintf('%02d', @date.minute)
+      else
+        puts '0'
       end
     end
+
+    def _convertForAPI
+      if (@asap?) return "ASAP"
+
+        return @date.month + '-' + @date.day + '+' + @date.hour + ':' + @date.minute
+    end
+
     def to_s
       puts('********* DEBUG INFO - Class dT *********')
       printf("%10s : %s\n", 'Date', @date)
