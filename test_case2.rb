@@ -6,6 +6,11 @@ $LOAD_PATH.unshift File.dirname(__FILE__) + '/lib'
 require 'api'
 
 o = API::OrdrIn.new('1','2')
+dt = API::DT.new
+
 # o.setCurrAcct('dabates77@gmail.com','test')
 o.setCurrAcct('1234','test')
 puts o
+
+dt._strAPI('month')
+puts dt
