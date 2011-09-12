@@ -9,6 +9,9 @@ require 'api'
 o = API::OrdrIn.new('1','2')
 dt = API::DT.new
 
+st =  API::Money.new(500.00)
+tip =  API::Money.new(st.amount * 0.15)
+
 o.setCurrAcct('dabates77@gmail.com','test')
 # o.setCurrAcct('1234','test')
 #puts o
@@ -28,6 +31,13 @@ a.validate
 # puts a
 
 m = API::Money.new(23.44)
-puts m
+# puts m
+
+r = API::Restaurant.new
+# r.to_s
+# r.delivery_check(33, dt, a)
+# r.delivery_fee(33, st, tip, dt, a)
+# r.details(33)
+
 
 $_errors.map {|e| puts 'Error : ' + e} if !$_errors.empty?

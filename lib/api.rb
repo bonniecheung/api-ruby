@@ -32,7 +32,13 @@ module API
         self._password=pass
       end
     end
-    
+
+    def _request(data)
+      puts "Do my request" 
+      puts "Data: "
+      puts data
+    end
+
     ## For debug, the string representation of this
     def to_s
       puts "** DEBUG INFORMATION **"
@@ -76,8 +82,8 @@ module API
     end
 
     def _convertForAPI
-      unless @ASAP
-        return @date.month + '-' + @date.day + '+' + @date.hour + ':' + @date.minute
+      unless @asap
+        return @date.month.to_s + '-' + @date.day.to_s + '+' + @date.hour.to_s + ':' + @date.minute.to_s
       else
         puts "ASAP"
       end
@@ -174,13 +180,90 @@ module API
       $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - Money - Validation - must be a number, we got (#{amt})"
     end
 
+    def _convertForAPI
+      return @amount
+    end
 
     def to_s
       puts('********* DEBUG INFO - Class Money ***********')
       printf("%10s : %.2f\n", 'Amount', @amount)
       puts '*' * 46
     end
-    
+  end
+  ## ---------------------------------------------------------------------------------------- ##  
+
+  ## Main Classes ##
+  ## -------------------------- Restaurant CLASS -------------------------------------------- ##
+  class Restaurant < OrdrIn
+    def initialize
+    end
+
+    def delivery_list(dt, addr)
+      
+    end
+
+    def delivery_check(id, dt, addr)
+      unless valid_id(id) 
+        $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") Restaurant - delivery_check - Validation - restaurant ID (invalid, must be numeric) we got (#{id})"
+      end
+
+      addr.validate
+      return _request([
+        'type' => 'GET',
+        'method' => 'dc',
+        'url_params' => [id, dt._convertForAPI, addr.zip, addr.city, addr.street],
+        'data_params' => []
+      ])
+    end
+
+    def delivery_fee(id, subtotal, tip, dt, addr)
+      unless valid_id(id)
+        $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") Restaurant - delivery_check - Validation - restaurant ID (invalid, must be numeric) we got (#{id})"
+      end
+
+      addr.validate
+      return _request([
+        'type' => 'GET',
+        'method' => 'fee',
+        'url_params' => [
+          id, 
+          subtotal._convertForAPI,
+          tip._convertForAPI,
+          dt._convertForAPI,
+          addr.zip,
+          addr.city,
+          addr.street
+        ],
+        'data_params' => []
+      ])
+    end
+
+    def details(id)
+      unless valid_id(id)
+        $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") Restaurant - delivery_check - Validation - restaurant ID (invalid, must be numeric) we got (#{id})"
+      end
+
+      return _request([
+        'type' => 'GET',
+        'method' => 'rd',
+        'url_params' => [id],
+        'data_params' => []
+      ])
+    end
+
+    def valid_id(id)
+      begin Float(id)
+        return true
+      end
+    rescue
+      return false
+    end
+
+    def to_s
+      str = '********* DEBUG INFO - Class Restaurant ***********' 
+      puts str
+      puts '*' * str.size
+    end
   end
   ## ---------------------------------------------------------------------------------------- ##  
 
