@@ -164,9 +164,16 @@ module API
   class Money
     attr :amount
 
-    def initialize
-      @amount = 0.00
+    def initialize(amt)
+      @amount = -0.00
+
+      begin Float(amt)
+        @amount = amt
+      end
+    rescue
+      $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - Money - Validation - must be a number, we got (#{amt})"
     end
+
 
     def to_s
       puts('********* DEBUG INFO - Class Money ***********')

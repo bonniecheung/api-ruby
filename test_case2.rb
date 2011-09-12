@@ -27,7 +27,7 @@ a.validate
 # puts "\nEnding Validation - Address"
 # puts a
 
-m = API::Money.new
+m = API::Money.new(23.44)
 puts m
 
 $_errors.map {|e| puts 'Error : ' + e} if !$_errors.empty?
