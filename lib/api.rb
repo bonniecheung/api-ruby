@@ -5,6 +5,10 @@
 require 'net/http'
 require 'date'
 require 'cgi'
+require 'digest/md5'
+require 'digest/sha1'
+require 'digest/sha2'
+
 ## TODO: I'm sure there will be more
 
 module API
@@ -14,16 +18,20 @@ module API
   $_cc_re = %r{^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})$}i
   $_email_regex = %r{^[0-9a-z][0-9a-z.+]+[0-9a-z]@[0-9a-z][0-9a-z.-]+[0-9a-z]$}i
 
+  def set_url(url)
+    $_url = url
+  end
 
   ## -------------------------- ORDRIN CLASS ------------------------------------------------ ##
   class OrdrIn
+    attr :_api_data
 
     def initialize(key, url)
       $_key=key
       $_url=url
     end
 
-    def setCurrAcct(email, pass)
+    def set_curr_acct(email, pass)
       unless email =~ $_email_regex
         ## Error
         $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - email invalid #{email}"
@@ -34,10 +42,25 @@ module API
     end
 
     def _request(data)
+      if $_key.nil? || $_key.empty? ; $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - initialization - must initialize with developer key for API" ; end
+      if $_url.nil? || $_url.empty? ; $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - initialization - must initialize with site at with API is running" ; end
+
+      post_type = data['type']
+      method = data['method']
+      headers = [
+        'X-NAAMA-CLIENT-AUTHENTICATION: id="' + $_key + '", version="1"',
+        'Content-Type: application/x-www-form-urlencoded'
+      ]
+
       puts "Do my request" 
-      puts "Data: "
-      puts data.inspect
+      puts "URL     : #{$_url}"
+      puts "Type    : #{post_type}\nHeaders : #{method}"
+      puts "Data    : " + data.inspect
+      # puts "Headers : " + headers.inspect
+      headers.map {|h| puts 'Header  : ' + h}
+
     end
+
 
     ## For debug, the string representation of this
     def to_s
@@ -217,12 +240,12 @@ module API
       end
 
       addr.validate
-      return _request([
+      return _request({
         'type' => 'GET',
         'method' => 'dc',
         'url_params' => [id, dt._convertForAPI, addr.zip, addr.city, addr.street],
         'data_params' => []
-      ])
+      })
     end
 
     def delivery_fee(id, subtotal, tip, dt, addr)
@@ -231,7 +254,7 @@ module API
       end
 
       addr.validate
-      return _request([
+      return _request({
         'type' => 'GET',
         'method' => 'fee',
         'url_params' => [
@@ -244,7 +267,7 @@ module API
           addr.street
         ],
         'data_params' => []
-      ])
+      })
     end
 
     def details(id)
@@ -252,12 +275,12 @@ module API
         $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") Restaurant - delivery_check - Validation - restaurant ID (invalid, must be numeric) we got (#{id})"
       end
 
-      return _request([
+      return _request({
         'type' => 'GET',
         'method' => 'rd',
         'url_params' => [id],
         'data_params' => []
-      ])
+      })
     end
 
     def to_s
@@ -302,7 +325,7 @@ module API
         time = dt._strAPI('hour') + ':' + dt._strAPI('minute')
       end
 
-      return _request([
+      return _request({
         'type' => 'POST',
         'method' => 'o',
         'url_params' => [id],
@@ -330,7 +353,7 @@ module API
           'card_bill_zip' => cc_addr.zip,
           'type' => 'RES'
         ]
-      ])
+      })
     end
 
 
@@ -343,26 +366,26 @@ module API
     end
     
     def make_acct(email, password, first_name, last_name)
-      return _request([
+      return _request({
         'type' => 'POST',
         'method' => 'uN',
         'url_params' => [email],
         'data_params' => []
-      ])
+      })
     end
     
     def get_acct
-      return _request([
+      return _request({
         'type' => 'GET',
         'method' => 'u',
         'url_params' => [$_email],
         'data_params' => []
-      ])
+      })
     end
     
     def get_address(addr_nick=nil)
       if (addr_nick.empty?)
-        return _request([
+        return _request({
           'type' => 'GET',
           'method' => 'u',
           'url_params' => [
@@ -370,23 +393,23 @@ module API
             'addrs',
             addr_nick
           ]
-        ])
+        })
       else
-        return _request([
+        return _request({
           'type' => 'GET',
           'method' => 'u',
           'url_params' => [
             $_email,
             'addrs'
           ]
-        ])
+        })
       end
     end
     
     def update_address(addr)
       addr.validate
       
-      return _request([
+      return _request({
         'type' => 'PUT',
         'method' => 'u',
         'url_params' => [
@@ -402,10 +425,125 @@ module API
           'zip' => addr.zip,
           'phone' => addr.phone
         ]
-      ])
+      })
     end
     
-  end
+    def delete_address(addr_nick)
+      return _request({
+        'type' => 'DELETE',
+        'method' => 'u',
+        'url_params' => [
+          $_email,
+          'addrs',
+          addr_nick
+        ],
+        'data_params' => []
+      })
+    end
+
+    def get_card(card_nick=nil)
+      unless card_nick.nil?
+        return _request({
+          'type' => 'GET',
+          'method' => 'u',
+          'url_params' => [
+            $_email,
+            'ccs',
+            card_nick
+          ],
+          'data_params' => []
+        })
+      else
+        return _request({
+          'type' => 'GET',
+          'method' => 'u',
+          'url_params' => [
+            $_email,
+            'ccs',
+          ],
+          'data_params' => []
+        })
+      end      
+    end
+
+    def update_card(card_nick, name, number, cvv, exp_month, exp_year, addr)
+      addr.validate
+
+      return _request({
+        'type' => 'PUT',
+        'method' => 'u',
+        'url_params' => [
+          $_email,
+          'ccs',
+          card_nick
+        ],
+        'data_params' => [
+          'name' => name,
+          'number' => number,
+          'cvc' => cvv,
+          'expiry_month' => expiry_month,
+          'expiry_year' => expiry_year,
+          'bill_addr' => addr.street,
+          'bill_addr2' => addr.street2,
+          'bill_city' => addr.city,
+          'bill_state' => addr.state,
+          'bill_zip' => addr.zip,
+        ]
+      })
+    end
+
+    def delete_card(card_nick)
+        return _request({
+          'type' => 'DELETE',
+          'method' => 'u',
+          'url_params' => [
+            $_email,
+            'ccs',
+            card_nick
+          ],
+          'data_params' => []
+        })
+    end
+
+    def order_history(id=nil)
+      unless id.nil?
+        return _request({
+          'type' => 'GET',
+          'method' => 'u',
+          'url_params' => [
+            $_email,
+            'order',
+            id
+          ],
+          'data_params' => []
+        })
+      else
+        return _request({
+          'type' => 'GET',
+          'method' => 'u',
+          'url_params' => [
+            $_email,
+            'orders'
+          ],
+          'data_params' => []
+        })
+      end
+    end
+
+    def update_password(password)
+        return _request({
+          'type' => 'PUT',
+          'method' => 'u',
+          'url_params' => [
+            $_email,
+            'password'
+          ],
+          'data_params' => [
+            'password' => (Digest::SHA2.new << $_password).to_s
+          ]
+        })
+    end
+  end ## End User Class
   ## ---------------------------------------------------------------------------------------- ##  
 
 end

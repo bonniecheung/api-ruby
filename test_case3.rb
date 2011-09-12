@@ -5,21 +5,16 @@ $LOAD_PATH.unshift File.dirname(__FILE__) + '/lib'
 # require 'lib/api'
 require 'api'
 
-api = API::OrdrIn.new('sLclVFC54BGXcjGku8bTaA','https://r-test.ordr.in')
+api = API::OrdrIn.new('mlJhC8iX4BGWVtn','https://r-test.ordr.in')
+# api = API::OrdrIn.new('','')
 dt = API::DT.new
 dt.asap = true;
 
 st =  API::Money.new(500.00)
 tip =  API::Money.new(st.amount * 0.15)
 
-api.setCurrAcct('dabates77@gmail.com','test')
-# api.setCurrAcct('1234','test')
+api.set_curr_acct('dave@batez-consulting.com','password')
 # puts api
-
-# puts 'Month : ' + dt._strAPI('month')
-# puts 'Day   : ' + dt._strAPI('day')
-# puts 'Hour  : ' + dt._strAPI('hour')
-# puts 'Minute: ' + dt._strAPI('minute')
 # puts dt
 
 a = API::Address.new('street with spaces', 'Cedar Rapids', '52404', 'street2','IA', '319-366-2309','nick')
@@ -48,6 +43,8 @@ u = API::User.new
 # u.update_address(a)
 # u.get_card
 # u.get_card('DISC')
-u.update_password('test2')
+# u.update_password('test2')
+$_url = 'https://u-test.ordr.in'
+u.get_acct
 
 $_errors.map {|e| puts 'Error : ' + e} if !$_errors.empty?
