@@ -1,20 +1,20 @@
 #!/usr/bin/env ruby -wKU
-#!/usr/bin/env ruby -wKU
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/lib'
 # puts $LOAD_PATH
 
 # require 'lib/api'
 require 'api'
 
-o = API::OrdrIn.new('1','2')
+api = API::OrdrIn.new('1','2')
 dt = API::DT.new
+dt.asap = true;
 
 st =  API::Money.new(500.00)
 tip =  API::Money.new(st.amount * 0.15)
 
-o.setCurrAcct('dabates77@gmail.com','test')
-# o.setCurrAcct('1234','test')
-#puts o
+api.setCurrAcct('dabates77@gmail.com','test')
+# api.setCurrAcct('1234','test')
+#puts api
 
 # puts 'Month : ' + dt._strAPI('month')
 # puts 'Day   : ' + dt._strAPI('day')
@@ -39,5 +39,7 @@ r = API::Restaurant.new
 # r.delivery_fee(33, st, tip, dt, a)
 # r.details(33)
 
+o = API::Order.new
+o.submit(33, 'tray1', tip, dt, 'dabates77@gmail.com', 'David', 'Bates', a, 'Discover', '6011000990139424', '040', '052011', a)
 
 $_errors.map {|e| puts 'Error : ' + e} if !$_errors.empty?

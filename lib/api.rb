@@ -11,11 +11,13 @@ module API
   attr :_errors
 
   $_errors = Array.new
+  $_cc_re = %r{^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})$}i
+  $_email_regex = %r{^[0-9a-z][0-9a-z.+]+[0-9a-z]@[0-9a-z][0-9a-z.-]+[0-9a-z]$}i
+
 
   ## -------------------------- ORDRIN CLASS ------------------------------------------------ ##
   class OrdrIn
     attr_accessor :_email, :_password, :_url, :_key
-    @@_email_regex = %r{^[0-9a-z][0-9a-z.+]+[0-9a-z]@[0-9a-z][0-9a-z.-]+[0-9a-z]$}xi
 
     def initialize(key, url)
       self._key=key
@@ -23,8 +25,7 @@ module API
     end
 
     def setCurrAcct(email, pass)
-
-      unless email =~ @@_email_regex
+      unless email =~ $_email_regex
         ## Error
         $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - email invalid #{email}"
       else
@@ -49,12 +50,21 @@ module API
       printf "%10s : %s\n", "Errors", $_errors
       print "*" * 23
     end
+
+    def valid_number(num)
+      begin Float(num)
+        return true
+      end
+    rescue
+      return false
+    end
+
   end ## OrdrIn Class
   ## ---------------------------------------------------------------------------------------- ##  
 
   ## -------------------------- DT     CLASS ------------------------------------------------ ##
   class DT
-    attr :date, :asap
+    attr_accessor :date, :asap
 
     def initialize(date=nil) 
       unless date
@@ -100,7 +110,7 @@ module API
 
   ## -------------------------- Address CLASS ----------------------------------------------- ##
   class Address
-    attr :street, :city, :zip, :street2, :state, :phone, :nick
+    attr_accessor :street, :city, :zip, :street2, :state, :phone, :nick
 
     def initialize(street, city, zip, street2, state, phone, nick)
       @street=CGI::escape(street)
@@ -168,7 +178,7 @@ module API
 
   ## -------------------------- Money   CLASS ----------------------------------------------- ##
   class Money
-    attr :amount
+    attr_accessor :amount
 
     def initialize(amt)
       @amount = -0.00
@@ -203,7 +213,7 @@ module API
     end
 
     def delivery_check(id, dt, addr)
-      unless valid_id(id) 
+      unless valid_number(id) 
         $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") Restaurant - delivery_check - Validation - restaurant ID (invalid, must be numeric) we got (#{id})"
       end
 
@@ -217,7 +227,7 @@ module API
     end
 
     def delivery_fee(id, subtotal, tip, dt, addr)
-      unless valid_id(id)
+      unless valid_num(id)
         $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") Restaurant - delivery_check - Validation - restaurant ID (invalid, must be numeric) we got (#{id})"
       end
 
@@ -239,7 +249,7 @@ module API
     end
 
     def details(id)
-      unless valid_id(id)
+      unless valid_number(id)
         $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") Restaurant - delivery_check - Validation - restaurant ID (invalid, must be numeric) we got (#{id})"
       end
 
@@ -251,19 +261,80 @@ module API
       ])
     end
 
-    def valid_id(id)
-      begin Float(id)
-        return true
-      end
-    rescue
-      return false
-    end
-
     def to_s
       str = '********* DEBUG INFO - Class Restaurant ***********' 
       puts str
       puts '*' * str.size
     end
+  end
+  ## ---------------------------------------------------------------------------------------- ##  
+
+  ## -------------------------- Order      CLASS -------------------------------------------- ##
+  class Order < OrdrIn
+    def initialize      
+    end
+
+    def submit(id, tray, tip, dt, email, first_name, last_name, addr, card_name, card_number, card_cvc, card_exp, cc_addr)
+
+      #Do the validations
+      addr.validate
+      cc_addr.validate
+      unless valid_number(id)
+        $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") Order - submit - Validation - restaurant ID (invalid, must be numeric) we got (#{id})"
+      end
+      
+      unless card_number =~ $_cc_re
+        $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") Order - submit - Validation - credit card number (invalid) (#{card_number})"
+      end
+
+      unless valid_number(card_cvc)
+        $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") Order - submit - Validation - credit card security code (invalid, must be numeric) (#{card_cvc})"
+      end
+
+      unless email =~ $_email_regex
+        $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") Order - submit - Validation - email (invalid) (#{email})"
+      end
+
+      if (dt.asap)
+        date = "ASAP"
+        time = ""
+      else
+        date = dt._strAPI('month') + '-' + dt._strAPI('day')
+        time = dt._strAPI('hour') + ':' + dt._strAPI('minute')
+      end
+
+      return _request([
+        'type' => 'POST',
+        'method' => 'o',
+        'url_params' => [id],
+        'data_params' => [
+          'tray' => tray,
+          'tip' => tip._convertForAPI,
+          'delivery_date' => date,
+          'delivery_time' => time,
+          'first_name' => first_name,
+          'last_name' => last_name,
+          'addr' => addr.street,
+          'city' => addr.city,
+          'state' => addr.state,
+          'zip' => addr.zip,
+          'phone' => addr.phone,
+          'em' => email,
+          'card_name' => card_name,
+          'card_number' => card_number,
+          'card_expiry' => card_exp,
+          'card_cvc' => card_cvc,
+          'card_bill_addr' => cc_addr.street,
+          'card_bill_addr2' => cc_addr.street2,
+          'card_bill_city' => cc_addr.city,
+          'card_bill_state' => cc_addr.state,
+          'card_bill_zip' => cc_addr.zip,
+          'type' => 'RES'
+        ]
+      ])
+    end
+
+
   end
   ## ---------------------------------------------------------------------------------------- ##  
 
