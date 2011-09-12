@@ -58,7 +58,7 @@ module API
       puts "Data    : " + data.inspect
       # puts "Headers : " + headers.inspect
       headers.map {|h| puts 'Header  : ' + h}
-
+      puts "Query   : " + data['data_params'].to_query
     end
 
 
@@ -243,8 +243,8 @@ module API
       return _request({
         'type' => 'GET',
         'method' => 'dc',
-        'url_params' => [id, dt._convertForAPI, addr.zip, addr.city, addr.street],
-        'data_params' => []
+        'url_params' => {id, dt._convertForAPI, addr.zip, addr.city, addr.street},
+        'data_params' => {}
       })
     end
 
@@ -257,7 +257,7 @@ module API
       return _request({
         'type' => 'GET',
         'method' => 'fee',
-        'url_params' => [
+        'url_params' => {
           id, 
           subtotal._convertForAPI,
           tip._convertForAPI,
@@ -265,8 +265,8 @@ module API
           addr.zip,
           addr.city,
           addr.street
-        ],
-        'data_params' => []
+        },
+        'data_params' => {}
       })
     end
 
@@ -278,8 +278,8 @@ module API
       return _request({
         'type' => 'GET',
         'method' => 'rd',
-        'url_params' => [id],
-        'data_params' => []
+        'url_params' => {id},
+        'data_params' => {}
       })
     end
 
@@ -328,8 +328,8 @@ module API
       return _request({
         'type' => 'POST',
         'method' => 'o',
-        'url_params' => [id],
-        'data_params' => [
+        'url_params' => {id},
+        'data_params' => {
           'tray' => tray,
           'tip' => tip._convertForAPI,
           'delivery_date' => date,
@@ -352,7 +352,7 @@ module API
           'card_bill_state' => cc_addr.state,
           'card_bill_zip' => cc_addr.zip,
           'type' => 'RES'
-        ]
+        }
       })
     end
 
@@ -369,8 +369,8 @@ module API
       return _request({
         'type' => 'POST',
         'method' => 'uN',
-        'url_params' => [email],
-        'data_params' => []
+        'url_params' => {email},
+        'data_params' => {}
       })
     end
     
@@ -378,8 +378,8 @@ module API
       return _request({
         'type' => 'GET',
         'method' => 'u',
-        'url_params' => [$_email],
-        'data_params' => []
+        'url_params' => {$_email},
+        'data_params' => {}
       })
     end
     
@@ -388,20 +388,20 @@ module API
         return _request({
           'type' => 'GET',
           'method' => 'u',
-          'url_params' => [
+          'url_params' => {
             $_email,
             'addrs',
             addr_nick
-          ]
+          }
         })
       else
         return _request({
           'type' => 'GET',
           'method' => 'u',
-          'url_params' => [
+          'url_params' => {
             $_email,
             'addrs'
-          ]
+          }
         })
       end
     end
@@ -412,19 +412,19 @@ module API
       return _request({
         'type' => 'PUT',
         'method' => 'u',
-        'url_params' => [
+        'url_params' => {
           $_email,
           'addrs',
           addr.nick
-        ],
-        'data_params' => [
+        },
+        'data_params' => {
           'addr' => addr.street,
           'addr2' => addr.street2,
           'city' => addr.city,
           'state' => addr.state,
           'zip' => addr.zip,
           'phone' => addr.phone
-        ]
+        }
       })
     end
     
@@ -432,12 +432,12 @@ module API
       return _request({
         'type' => 'DELETE',
         'method' => 'u',
-        'url_params' => [
+        'url_params' => {
           $_email,
           'addrs',
           addr_nick
-        ],
-        'data_params' => []
+        },
+        'data_params' => {}
       })
     end
 
@@ -446,22 +446,22 @@ module API
         return _request({
           'type' => 'GET',
           'method' => 'u',
-          'url_params' => [
+          'url_params' => {
             $_email,
             'ccs',
             card_nick
-          ],
-          'data_params' => []
+          },
+          'data_params' => {}
         })
       else
         return _request({
           'type' => 'GET',
           'method' => 'u',
-          'url_params' => [
+          'url_params' => {
             $_email,
             'ccs',
-          ],
-          'data_params' => []
+          },
+          'data_params' => {}
         })
       end      
     end
@@ -472,12 +472,12 @@ module API
       return _request({
         'type' => 'PUT',
         'method' => 'u',
-        'url_params' => [
+        'url_params' => {
           $_email,
           'ccs',
           card_nick
-        ],
-        'data_params' => [
+        },
+        'data_params' => {
           'name' => name,
           'number' => number,
           'cvc' => cvv,
@@ -488,7 +488,7 @@ module API
           'bill_city' => addr.city,
           'bill_state' => addr.state,
           'bill_zip' => addr.zip,
-        ]
+        }
       })
     end
 
@@ -496,12 +496,12 @@ module API
         return _request({
           'type' => 'DELETE',
           'method' => 'u',
-          'url_params' => [
+          'url_params' => {
             $_email,
             'ccs',
             card_nick
-          ],
-          'data_params' => []
+          },
+          'data_params' => {}
         })
     end
 
@@ -510,22 +510,22 @@ module API
         return _request({
           'type' => 'GET',
           'method' => 'u',
-          'url_params' => [
+          'url_params' => {
             $_email,
             'order',
             id
-          ],
-          'data_params' => []
+          },
+          'data_params' => {}
         })
       else
         return _request({
           'type' => 'GET',
           'method' => 'u',
-          'url_params' => [
+          'url_params' => {
             $_email,
             'orders'
-          ],
-          'data_params' => []
+          },
+          'data_params' => {}
         })
       end
     end
@@ -534,13 +534,13 @@ module API
         return _request({
           'type' => 'PUT',
           'method' => 'u',
-          'url_params' => [
+          'url_params' => {
             $_email,
             'password'
-          ],
-          'data_params' => [
+          },
+          'data_params' => {
             'password' => (Digest::SHA2.new << $_password).to_s
-          ]
+          }
         })
     end
   end ## End User Class

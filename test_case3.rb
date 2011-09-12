@@ -35,7 +35,8 @@ r = API::Restaurant.new
 # r.details(33)
 
 o = API::Order.new
-# o.submit(33, 'tray1', tip, dt, 'dabates77@gmail.com', 'David', 'Bates', a, 'Discover', '6011000990139424', '040', '052011', a)
+$_url = 'https://o-test.ordr.in'
+o.submit(33, 'tray1', tip, dt, 'dabates77@gmail.com', 'David', 'Bates', a, 'Discover', '6011000990139424', '040', '052011', a)
 
 u = API::User.new
 # puts api
@@ -44,7 +45,7 @@ u = API::User.new
 # u.get_card
 # u.get_card('DISC')
 # u.update_password('test2')
-$_url = 'https://u-test.ordr.in'
-u.get_acct
+# $_url = 'https://u-test.ordr.in'
+# u.get_acct
 
 $_errors.map {|e| puts 'Error : ' + e} if !$_errors.empty?
