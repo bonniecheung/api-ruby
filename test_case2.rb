@@ -14,7 +14,7 @@ tip =  API::Money.new(st.amount * 0.15)
 
 api.setCurrAcct('dabates77@gmail.com','test')
 # api.setCurrAcct('1234','test')
-#puts api
+puts api
 
 # puts 'Month : ' + dt._strAPI('month')
 # puts 'Day   : ' + dt._strAPI('day')
@@ -23,7 +23,7 @@ api.setCurrAcct('dabates77@gmail.com','test')
 # puts dt
 
 a = API::Address.new('street with spaces', 'Cedar Rapids', '52404', 'street2','IA', '319-366-2309','nick')
-#puts a.to_s
+# puts a.to_s
 
 # puts "Starting Validation - Address"
 a.validate
@@ -40,6 +40,11 @@ r = API::Restaurant.new
 # r.details(33)
 
 o = API::Order.new
-o.submit(33, 'tray1', tip, dt, 'dabates77@gmail.com', 'David', 'Bates', a, 'Discover', '6011000990139424', '040', '052011', a)
+# o.submit(33, 'tray1', tip, dt, 'dabates77@gmail.com', 'David', 'Bates', a, 'Discover', '6011000990139424', '040', '052011', a)
+
+u = API::User.new
+api.setCurrAcct('dabates77@gmail.com', 'testb')
+puts api
+u.update_address(a)
 
 $_errors.map {|e| puts 'Error : ' + e} if !$_errors.empty?

@@ -8,7 +8,7 @@ require 'cgi'
 ## TODO: I'm sure there will be more
 
 module API
-  attr :_errors
+  attr_accessor :_errors, :_key, :_url, :_email, :_password
 
   $_errors = Array.new
   $_cc_re = %r{^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})$}i
@@ -17,11 +17,10 @@ module API
 
   ## -------------------------- ORDRIN CLASS ------------------------------------------------ ##
   class OrdrIn
-    attr_accessor :_email, :_password, :_url, :_key
 
     def initialize(key, url)
-      self._key=key
-      self._url=url
+      $_key=key
+      $_url=url
     end
 
     def setCurrAcct(email, pass)
@@ -29,24 +28,24 @@ module API
         ## Error
         $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - email invalid #{email}"
       else
-        self._email= email
-        self._password=pass
+        $_email= email
+        $_password=pass
       end
     end
 
     def _request(data)
       puts "Do my request" 
       puts "Data: "
-      puts data
+      puts data.inspect
     end
 
     ## For debug, the string representation of this
     def to_s
       puts "** DEBUG INFORMATION **"
-      printf "%10s : %s\n", "Key", self._key
-      printf "%10s : %s\n", "URL", self._url
-      printf "%10s : %s\n", "Email", self._email
-      printf "%10s : %s\n", "Password", self._password
+      printf "%10s : %s\n", "Key", $_key
+      printf "%10s : %s\n", "URL", $_url
+      printf "%10s : %s\n", "Email", $_email
+      printf "%10s : %s\n", "Password", $_password
       printf "%10s : %s\n", "Errors", $_errors
       print "*" * 23
     end
@@ -335,6 +334,77 @@ module API
     end
 
 
+  end
+  ## ---------------------------------------------------------------------------------------- ##  
+
+  ## -------------------------- Order      CLASS -------------------------------------------- ##
+  class User < OrdrIn
+    def initialize
+    end
+    
+    def make_acct(email, password, first_name, last_name)
+      return _request([
+        'type' => 'POST',
+        'method' => 'uN',
+        'url_params' => [email],
+        'data_params' => []
+      ])
+    end
+    
+    def get_acct
+      return _request([
+        'type' => 'GET',
+        'method' => 'u',
+        'url_params' => [$_email],
+        'data_params' => []
+      ])
+    end
+    
+    def get_address(addr_nick=nil)
+      if (addr_nick.empty?)
+        return _request([
+          'type' => 'GET',
+          'method' => 'u',
+          'url_params' => [
+            $_email,
+            'addrs',
+            addr_nick
+          ]
+        ])
+      else
+        return _request([
+          'type' => 'GET',
+          'method' => 'u',
+          'url_params' => [
+            $_email,
+            'addrs'
+          ]
+        ])
+      end
+    end
+    
+    def update_address(addr)
+      addr.validate
+      
+      return _request([
+        'type' => 'PUT',
+        'method' => 'u',
+        'url_params' => [
+          $_email,
+          'addrs',
+          addr.nick
+        ],
+        'data_params' => [
+          'addr' => addr.street,
+          'addr2' => addr.street2,
+          'city' => addr.city,
+          'state' => addr.state,
+          'zip' => addr.zip,
+          'phone' => addr.phone
+        ]
+      ])
+    end
+    
   end
   ## ---------------------------------------------------------------------------------------- ##  
 
