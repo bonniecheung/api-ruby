@@ -41,6 +41,22 @@ module API
       end
     end
 
+    ## You can use a Hash or regular array here
+    def _make_request_str(ar, sep)
+      ## Do the Hash version
+      ret_str = ''
+      if ar.kind_of?(Hash)
+        ret_str = ar.map do |k,v|
+          "#{k}=#{v}"
+        end.join sep
+
+      elsif ar.kind_of?(Array)
+         ret_str = ar.map {|v| '#{v}' }.join sep
+      end
+
+      return ret_str
+    end
+
     def _request(data)
       if $_key.nil? || $_key.empty? ; $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - initialization - must initialize with developer key for API" ; end
       if $_url.nil? || $_url.empty? ; $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - initialization - must initialize with site at with API is running" ; end
@@ -51,6 +67,26 @@ module API
         'X-NAAMA-CLIENT-AUTHENTICATION: id="' + $_key + '", version="1"',
         'Content-Type: application/x-www-form-urlencoded'
       ]
+      query = _make_request_str(data['data_params'], '&')
+
+      method = u if method == 'uN'
+      url_params = "/#{method}/" + (data['url_params'].join '/')
+
+      ## Create the URL stuff
+      url = URI.parse($_url)
+      puts "URLP    : " + url.to_s
+
+      if (data['method'] == 'u')
+        unless ($_email.empty || $_email.nil?) || ($_password.empty? || $_password.nil?)
+          $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - user API - valid email and password required to access user API';"
+        end
+
+        headers << 'X-NAAMA-AUTHENTICATION: username="' +$_email + '", response="'  + (Digest::SHA2.new << ($_password+ $_email + url_params)).to_s + '", version="1"';
+      end
+
+      unless $_errors.empty?
+        raise 'Errors Encountered: ' + ($_errors.join '\n')
+      end
 
       puts "Do my request" 
       puts "URL     : #{$_url}"
@@ -58,7 +94,8 @@ module API
       puts "Data    : " + data.inspect
       # puts "Headers : " + headers.inspect
       headers.map {|h| puts 'Header  : ' + h}
-      puts "Query   : " + data['data_params'].to_query
+      puts "Query   : " + query
+      puts "URL P   : " + url_params
     end
 
 
@@ -117,7 +154,7 @@ module API
       unless @asap
         return @date.month.to_s + '-' + @date.day.to_s + '+' + @date.hour.to_s + ':' + @date.minute.to_s
       else
-        puts "ASAP"
+        return "ASAP"
       end
     end
 
