@@ -66,47 +66,50 @@ module API
       method = data['method']
       headers = {
         'X-NAAMA-CLIENT-AUTHENTICATION' => 'id="' + $_key + '", version="1"',
-        'Content-Type:' => 'application/x-www-form-urlencoded'
+        'Content-Type' => 'application/x-www-form-urlencoded'
       }
       query = _make_request_str(data['data_params'], '&')
 
-      method = u if method == 'uN'
+      method = 'u' if method == 'uN'
       url_params = "/#{method}/" + (data['url_params'].join '/')
 
       rest_url = "#{$_url}#{url_params}"
-      puts "REST URL: #{rest_url}"
+      # puts "REST URL: #{rest_url}"
 
       uri = URI.parse(rest_url)
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl=true;http.verify_mode = OpenSSL::SSL::VERIFY_NONE if uri.scheme.downcase == 'https'
 
       if (data['method'] == 'u')
-        unless ($_email.empty || $_email.nil?) || ($_password.empty? || $_password.nil?)
+        if ($_email.empty? || $_email.nil?) || ($_password.empty? || $_password.nil?)
           $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - user API - valid email and password required to access user API"
         end
 
-        headers << {'X-NAAMA-AUTHENTICATION' => 'username="' + $_email + '", response="'  + (Digest::SHA2.new << ($_password+ $_email + url_params)).to_s + '", version="1"'};
+        headers['X-NAAMA-AUTHENTICATION'] = 'username="' + $_email + '", response="'  + (Digest::SHA2.new << ($_password+ $_email + url_params)).to_s + '", version="1"';
       end
 
       unless $_errors.empty?
         raise 'Errors Encountered: ' + ($_errors.join '\n')
       end
 
-      puts "Do my request" 
+      # puts "Do my request" 
       puts "URL     : #{$_url}"
-      puts "Type    : #{post_type}\nHeaders : #{method}"
+      puts "Type    : #{post_type}\nMethods : #{method}"
       puts "Data    : " + data.inspect
-      # puts "Headers : " + headers.inspect
+      # # puts "Headers : " + headers.inspect
       headers.map {|h,h2| puts "Header  : #{h}: #{h2}"}
-      puts 'Header F:' + headers.inspect
+      # puts 'Header F:' + headers.inspect
       puts "Query   : " + query
-      puts "URL P   : " + url_params
+      # puts "URL P   : " + url_params
 
       ## Do the call
       case post_type.downcase
       when 'get'
-        resp = http.get(uri.path, headers)
-        puts "Response : " + resp.body
+        return http.get(uri.path, headers).body
+      when 'post'
+        return  http.post(uri.path, query, headers).body
+      when 'delete'
+        return http.delete(uri.path, headers).body
       else
         $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - user API - Invalid request method (#{post_type})"
         raise 'Errors Encountered: ' + ($_errors.join '\n')
@@ -428,7 +431,11 @@ module API
         'type' => 'POST',
         'method' => 'uN',
         'url_params' => [email],
-        'data_params' => {}
+        'data_params' => {
+          'password' => password,
+          'first_name' => first_name,
+          'last_name' => last_name
+        }
       })
     end
     

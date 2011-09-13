@@ -17,15 +17,18 @@ api.set_curr_acct('dave@batez-consulting.com','password')
 
 r = API::Restaurant.new
 $_url = 'https://r-test.ordr.in'
-r.delivery_check(33, dt, a)
-r.delivery_list(dt, a)
-r.details(1)
+# r.delivery_check(33, dt, a)
+# puts r.delivery_list(dt, a)
+# r.details(1)
 
 o = API::Order.new
 $_url = 'https://o-test.ordr.in'
-# o.submit(33, 'tray1', tip, dt, 'dabates77@gmail.com', 'David', 'Bates', a, 'Discover', '6011000990139424', '040', '052011', a)
+# puts o.submit(141, 'tray1', tip, dt, 'dabates77@gmail.com', 'David', 'Bates', a, 'Discover', '6011000990139424', '040', '052011', a)
 
 u = API::User.new
 $_url = 'https://u-test.ordr.in'
+api.set_curr_acct('test0@testing.com','test0')
+# puts u.make_acct('dabates77@gmail.com', 'password', 'Dave','Bates')
+puts u.get_acct
 
 $_errors.map {|e| puts 'Error : ' + e} unless $_errors.empty?
