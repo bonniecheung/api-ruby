@@ -9,7 +9,7 @@ api = API::OrdrIn.new('mlJhC8iX4BGWVtn','https://r-test.ordr.in')
 dt = API::DT.new
 st =  API::Money.new(500.00)
 tip =  API::Money.new(st.amount * 0.15)
-a = API::Address.new('street with spaces', 'Cedar Rapids', '52404', 'street2','IA', '319-366-2309','nick')
+a = API::Address.new('1 Main Street', 'College Station', '77840', '','TX', '319-132-5648','nick')
 m = API::Money.new(23.44)
 
 dt.asap = true;
@@ -18,6 +18,8 @@ api.set_curr_acct('dave@batez-consulting.com','password')
 r = API::Restaurant.new
 $_url = 'https://r-test.ordr.in'
 r.delivery_check(33, dt, a)
+r.delivery_list(dt, a)
+r.details(1)
 
 o = API::Order.new
 $_url = 'https://o-test.ordr.in'

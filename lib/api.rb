@@ -3,6 +3,7 @@
 ### The Ordr In API Module
 
 require 'net/http'
+require 'net/https'
 require 'date'
 require 'cgi'
 require 'digest/md5'
@@ -63,25 +64,28 @@ module API
 
       post_type = data['type']
       method = data['method']
-      headers = [
-        'X-NAAMA-CLIENT-AUTHENTICATION: id="' + $_key + '", version="1"',
-        'Content-Type: application/x-www-form-urlencoded'
-      ]
+      headers = {
+        'X-NAAMA-CLIENT-AUTHENTICATION' => 'id="' + $_key + '", version="1"',
+        'Content-Type:' => 'application/x-www-form-urlencoded'
+      }
       query = _make_request_str(data['data_params'], '&')
 
       method = u if method == 'uN'
       url_params = "/#{method}/" + (data['url_params'].join '/')
 
-      ## Create the URL stuff
-      url = URI.parse($_url)
-      puts "URLP    : " + url.to_s
+      rest_url = "#{$_url}#{url_params}"
+      puts "REST URL: #{rest_url}"
+
+      uri = URI.parse(rest_url)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl=true;http.verify_mode = OpenSSL::SSL::VERIFY_NONE if uri.scheme.downcase == 'https'
 
       if (data['method'] == 'u')
         unless ($_email.empty || $_email.nil?) || ($_password.empty? || $_password.nil?)
-          $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - user API - valid email and password required to access user API';"
+          $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - user API - valid email and password required to access user API"
         end
 
-        headers << 'X-NAAMA-AUTHENTICATION: username="' +$_email + '", response="'  + (Digest::SHA2.new << ($_password+ $_email + url_params)).to_s + '", version="1"';
+        headers << {'X-NAAMA-AUTHENTICATION' => 'username="' + $_email + '", response="'  + (Digest::SHA2.new << ($_password+ $_email + url_params)).to_s + '", version="1"'};
       end
 
       unless $_errors.empty?
@@ -93,9 +97,20 @@ module API
       puts "Type    : #{post_type}\nHeaders : #{method}"
       puts "Data    : " + data.inspect
       # puts "Headers : " + headers.inspect
-      headers.map {|h| puts 'Header  : ' + h}
+      headers.map {|h,h2| puts "Header  : #{h}: #{h2}"}
+      puts 'Header F:' + headers.inspect
       puts "Query   : " + query
       puts "URL P   : " + url_params
+
+      ## Do the call
+      case post_type.downcase
+      when 'get'
+        resp = http.get(uri.path, headers)
+        puts "Response : " + resp.body
+      else
+        $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - user API - Invalid request method (#{post_type})"
+        raise 'Errors Encountered: ' + ($_errors.join '\n')
+      end ## CASE
     end
 
 
@@ -268,7 +283,13 @@ module API
     end
 
     def delivery_list(dt, addr)
-      
+      addr.validate
+      return _request({
+        'type' => 'GET',
+        'method' => 'dl',
+        'url_params' => [dt._convertForAPI, addr.zip, addr.city, addr.street],
+        'data_params' => {}
+      })
     end
 
     def delivery_check(id, dt, addr)
