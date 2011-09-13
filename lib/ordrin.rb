@@ -12,7 +12,7 @@ require 'digest/sha2'
 
 ## TODO: I'm sure there will be more
 
-module API
+module OrdrIn
   attr_accessor :_errors, :_key, :_url, :_email, :_password
 
   $_errors = Array.new
@@ -24,7 +24,7 @@ module API
   end
 
   ## -------------------------- ORDRIN CLASS ------------------------------------------------ ##
-  class OrdrIn
+  class API
     attr :_api_data
 
     def initialize(key, url)
@@ -260,6 +260,10 @@ module API
     end
 
     def _convertForAPI
+      if @amount.is_a?String
+        @amount = @amount.to_f
+      end
+
       return @amount
     end
 
@@ -273,7 +277,7 @@ module API
 
   ## Main Classes ##
   ## -------------------------- Restaurant CLASS -------------------------------------------- ##
-  class Restaurant < OrdrIn
+  class Restaurant < API
     def initialize
     end
 
@@ -345,7 +349,7 @@ module API
   ## ---------------------------------------------------------------------------------------- ##  
 
   ## -------------------------- Order      CLASS -------------------------------------------- ##
-  class Order < OrdrIn
+  class Order < API
     def initialize      
     end
 
@@ -414,7 +418,7 @@ module API
   ## ---------------------------------------------------------------------------------------- ##  
 
   ## -------------------------- Order      CLASS -------------------------------------------- ##
-  class User < OrdrIn
+  class User < API
     def initialize
     end
     
