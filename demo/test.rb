@@ -170,4 +170,3 @@ when 'o'
   o.submit(rid, tray, OrdrIn::Money.new(tip), dt, email, fname, lname, place, "#{fname} #{lname}", cardnum, cvc, exp, place)
 
 end # CASE TYPE
-
