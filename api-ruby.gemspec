@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = "api-ruby"
-  s.version = "1.0.0"
+  s.version = "0.9.25"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["David Bates - OrdrIn"]
@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.description = "OrdrIn Ruby Wrapper for the API"
   s.email = ""
   s.extra_rdoc_files = ["README.md", "lib/api.rb"]
-  s.files = ["README.md", "Rakefile", "lib/api.rb", "Manifest", "api-ruby.gemspec"]
+  s.files = ["Manifest", "README.md", "Rakefile", "api-ruby.gemspec", "lib/api.rb"]
   s.homepage = "http://ordr.in"
   s.rdoc_options = ["--line-numbers", "--inline-source", "--title", "Api-ruby", "--main", "README.md"]
   s.require_paths = ["lib"]

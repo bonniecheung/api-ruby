@@ -3,3 +3,5 @@
 .DS_Store
 *.pui
 *.prj
+test_case*.rb
+pkg

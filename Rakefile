@@ -2,7 +2,7 @@ require 'rubygems'
 require 'rake'
 require 'echoe'
 
-Echoe.new('api-ruby','1.0.0') do |p|
+Echoe.new('api-ruby','0.9.25') do |p|
   p.description         = 'OrdrIn Ruby Wrapper for the API'
   p.url                 = 'http://ordr.in'
   p.author              = 'David Bates - OrdrIn'

@@ -93,13 +93,13 @@ module API
       end
 
       # puts "Do my request" 
-      puts "URL     : #{$_url}"
-      puts "Type    : #{post_type}\nMethods : #{method}"
-      puts "Data    : " + data.inspect
+      # puts "URL     : #{$_url}"
+      # puts "Type    : #{post_type}\nMethods : #{method}"
+      # puts "Data    : " + data.inspect
       # # puts "Headers : " + headers.inspect
-      headers.map {|h,h2| puts "Header  : #{h}: #{h2}"}
+      # headers.map {|h,h2| puts "Header  : #{h}: #{h2}"}
       # puts 'Header F:' + headers.inspect
-      puts "Query   : " + query
+      # puts "Query   : " + query
       # puts "URL P   : " + url_params
 
       ## Do the call
@@ -118,15 +118,15 @@ module API
 
 
     ## For debug, the string representation of this
-    def to_s
-      puts "** DEBUG INFORMATION **"
-      printf "%10s : %s\n", "Key", $_key
-      printf "%10s : %s\n", "URL", $_url
-      printf "%10s : %s\n", "Email", $_email
-      printf "%10s : %s\n", "Password", $_password
-      printf "%10s : %s\n", "Errors", $_errors
-      print "*" * 23
-    end
+    # def to_s
+    #   puts "** DEBUG INFORMATION **"
+    #   printf "%10s : %s\n", "Key", $_key
+    #   printf "%10s : %s\n", "URL", $_url
+    #   printf "%10s : %s\n", "Email", $_email
+    #   printf "%10s : %s\n", "Password", $_password
+    #   printf "%10s : %s\n", "Errors", $_errors
+    #   print "*" * 23
+    # end
 
     def valid_number(num)
       begin Float(num)
@@ -164,7 +164,7 @@ module API
       when 'minute'
         return sprintf('%02d', @date.minute)
       else
-        puts '0'
+        return '0'
       end
     end
 
@@ -205,35 +205,27 @@ module API
 
     def validate(element='all')
       if (element == 'zip' && !(@zip =~ %r{(^\d{5}$)|(^\d{5}-\d{4}$)}i)) ## Validate Zip
-        puts "#{__LINE__}: ZIP Error, not a valid zip"
         $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - Zip code invalid (#{@zip})"
       elsif (element == 'phone' && !(@phone =~ %r{(^\(?(\d{3})\)?[- .]?(\d{3})[- .]?(\d{4})$)}i))
-        puts "#{__LINE__}: PHONE Error, not a valid phone"
         $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - Phone number invalid (#{@phone})"
       elsif (element == 'city' && !(@city =~ %r{[A-z.-]}))
-        puts "#{__LINE__}: CITY Error, not a valid city"
         $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - City (invalid, only letters/spaces allowed) (#{@city})"
       elsif (element == 'state' && !(@state =~ %r{^([A-z]){2}$}))
-        puts "#{__LINE__}: STATE Error, not a valid state"
         $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - State (invalid, only letters allowed and must be passed as two-letter abbreviation) (#{@state})"
       else ## Do all 
         if (!(@zip =~ %r{(^\d{5}$)|(^\d{5}-\d{4}$)}i)) ## Validate Zip
-          puts "#{__LINE__}: ZIP Error, not a valid zip"
           $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - Zip code invalid (#{@zip})"
         end
 
         if (!(@phone =~ %r{(^\(?(\d{3})\)?[- .]?(\d{3})[- .]?(\d{4})$)}i))
-          puts "#{__LINE__}: PHONE Error, not a valid phone"
           $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - Phone number invalid (#{@phone})"
         end
 
         if (!(@city =~ %r{[A-z.-]}))
-          puts "#{__LINE__}: CITY Error, not a valid city"
           $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - City (invalid, only letters/spaces allowed) (#{@city})"
         end
 
         if (!(@state =~ %r{^([A-z]){2}$}))
-          puts "#{__LINE__}: STATE Error, not a valid state"
           $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") - validation - State (invalid, only letters allowed and must be passed as two-letter abbreviation) (#{@state})"
         end
       end

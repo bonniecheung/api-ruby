@@ -1,4 +1,5 @@
+Manifest
 README.md
 Rakefile
+api-ruby.gemspec
 lib/api.rb
-Manifest
