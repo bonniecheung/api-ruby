@@ -37,13 +37,13 @@ Usage
     u.get_address("home") # returns details on address with given nickname
     u.delete_address("home") # deletes address with nickname
     
-    u.updateCard("personal", "John Doe", "4111111111111111", "444", "02", "12", place) # sets card with such a nickname if it does not yet exists, updates it if otherwise
-    u.getCard("personal") # returns details on card with given nickname
-    u.deleteCard("personal") # deletes card with nickname
+    u.update_card("personal", "John Doe", "4111111111111111", "444", "02", "12", place) # sets card with such a nickname if it does not yet exists, updates it if otherwise
+    u.get_card("personal") # returns details on card with given nickname
+    u.delete_card("personal") # deletes card with nickname
     
-    u.orderHistory("12") # returns previous order; if no ID given, all previous orders listed
+    u.order_history("12") # returns previous order; if no ID given, all previous orders listed
     
-    u.updatePassword("newPassword") # sets new password
+    u.update_password("newPassword") # sets new password
     
     o = OrdrIn::Order.new
     o.submit("142", tray, tip, date_time, "test@testing.com", "John", "Doe", place, "John Doe", "4111111111111111", "444", "0212", place) # tray as [item ID][quantity][options]-[item ID-2][quantity]
