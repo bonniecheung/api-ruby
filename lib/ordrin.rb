@@ -306,7 +306,7 @@ module OrdrIn
     end
 
     def delivery_fee(id, subtotal, tip, dt, addr)
-      unless valid_num(id)
+      unless valid_number(id)
         $_errors << File.basename(__FILE__) + " (" + __LINE__.to_s + ") Restaurant - delivery_check - Validation - restaurant ID (invalid, must be numeric) we got (#{id})"
       end
 

@@ -14,23 +14,23 @@ Usage
         
     OrdrIn::API.new("shds1d6c4BGDGs8", "http://localhost") # developer key and site where hosted
     
-    place = OrdrIn::Address.new("1 Main St", "College Station", "77840", "Suite 200", "Texas", "4044099661", "Home") # street, city, zip, street2, state, phone, nickname
+    place = OrdrIn::Address.new("1 Main St", "College Station", "77840", "Suite 200", "TX", "4044099661", "Home") # street, city, zip, street2, state, phone, nickname
     date_time = OrdrIn::DT.new
     date_time.asap = true ## Turns on ASAP mode
 
-    subT = OrdrIn::Moneny.new(100)
-    tip = OrdrIn::Moneny.new(15)
+    subT = OrdrIn::Money.new(100)
+    tip = OrdrIn::Money.new(15)
     
     r = OrdrIn::Restaurant.new
     r.delivery_list(date_time, place) # time, location
-    r.def delivery_check("142", date_time, place) # subtotal, time, location
+    r.delivery_check("142", date_time, place) # subtotal, time, location
     r.delivery_fee("142", subT, tip, date_time, place) # restaurant ID, subtotal, tip, time, location
     r.details("142") # restaurant ID
 
     u = OrdrIn::User.new
-    u.makeAcct("test@test.com", "pass", "John", "Doe")
+    u.make_acct("test@test.com", "pass", "John", "Doe")
 
-    api = OrdrIn::API.new
+    api = OrdrIn::API.new("shds1d6c4BGDGs8", "http://localhost")
     api.set_curr_acct("test@test.com", "pass") # user and pass required to be set before using rest of User API
     
     u.update_address(place) # sets address with such a nickname if it does not yet exists, updates it if otherwise
